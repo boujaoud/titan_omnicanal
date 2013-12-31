@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/tx 
+		        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		        http://www.springframework.org/schema/context 
+		        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		        
+ <!-- le beandans lequel on configure des coordonnées de notre base de données chalanger 
+      Le bean ainsi créé fournira les connections à votre base
+ -->
+ <bean id="DataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+  <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+  <property name="url" value="jdbc:mysql://localhost:3306/chalenger" />
+  <property name="username" value="root" />
+  <property name="password" value="jamal" />
+</bean>
+
+<!-- Le bean SessionFactory s’occupe de fournir les sessions à notre application quand des ordres Hibernate s’éxécutent. -->
+<bean id="SessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" >
+  <property name="dataSource" ref="DataSource" />
+  <property name="annotatedClasses">
+ <list>
+    <value> com.sqli.beans.Archivage</value>
+    <value>com.sqli.beans.Collaborateur</value>
+    <value> com.sqli.beans.Competence</value>
+    <value>com.sqli.beans.Diplome</value>
+    <value>com.sqli.beans.Ecole</value>
+    <value>com.sqli.beans.ManagerRh</value>
+    <value>com.sqli.beans.ManagerRhId</value>
+    <value>com.sqli.beans.Niveau</value>
+    <value> com.sqli.beans.ObtenirDiplome</value>
+    <value>com.sqli.beans.Poste</value>
+    <value>com.sqli.beans.Profile</value>
+    <value>com.sqli.beans.Technologie</value>
+    <value>com.sqli.beans.User</value>
+ </list>
+   </property>
+
+  <property name="hibernateProperties">
+    <props>
+      <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+      <prop key="hibernate.show_sql">true</prop>
+      <prop key="hibernate.hbm2ddl.auto">update</prop>
+    </props>
+  </property>
+</bean>
+
+<!-- Le TransactionManager est le bean qui va s’occuper de gérer les transactions vers votre base de données de manière transparente. -->
+<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" >
+  <property name="sessionFactory" ref="SessionFactory" />
+</bean>
+<!-- ca pour permettre à Spring de détecter les classes annotées demandant d’utiliser des transactions -->
+<tx:annotation-driven transaction-manager="transactionManager" />
+<!--  ca permet de dire à spring aller chercher les classes annoté par repositry ou autre pour les faire referencer comme beans dans le context spring -->
+
+
+<context:component-scan base-package="com.sqli.*" />
+
+</beans>
+
